@@ -1,9 +1,10 @@
 # discord-anti-toxicity
 
-A powerful discord bot powered by tensorflow Js
+A simple discord bot powered by tensorflow Js, and the toxicity model 
 
-Get a discord token in "https://discord.com/developers/applications"
+**Warning**: For performance reasons, it's best to keep queries to a minimum.
 
+With good performance or few servers, you can lower the interval 
 
 If you use Node:
 
