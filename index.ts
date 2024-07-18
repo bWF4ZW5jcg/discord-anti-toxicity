@@ -13,7 +13,7 @@ const indice = 0.9; //Sensibility
 const messages: Discord.Message[] = []; 
 const interval = 5_000;
 
-// ECMAScript 2022 (ES13), view tsconfig.json
+// ECMAScript 2022 (ES13)/ESNext, view tsconfig.json
 const model = await toxicityModel.load(indice, ['toxicity']);
 
 client.once('ready', () => {
