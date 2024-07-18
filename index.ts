@@ -34,14 +34,15 @@ client.once('ready', () => {
                 const message = messages.at(index);
 
                 if (matched && message) {
-                    message?.delete();
+                    //Your actions
+                     message.delete();
                 }
             })
         }
     }, interval);
 });
 
-client.on('messageCreate', async message => {
+client.on('messageCreate', message => {
     const { author, member, guild } = message;
     const bypass = author.bot || member?.permissions.has('Administrator') || guild?.ownerId == author.id;
 
