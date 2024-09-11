@@ -1,56 +1,51 @@
 import '@tensorflow/tfjs';
-import '@tensorflow/tfjs-backend-cpu';
-import '@tensorflow/tfjs-backend-webgl';
-import tfModel from '@tensorflow-models/toxicity';
+import * as Model from '@tensorflow-models/toxicity';
+import * as Discord from 'discord.js';
 
-import Discord from 'discord.js';
-const client = new Discord.Client({ intents: 12 });
-
-const discord_token = '';
 const indice = 0.9; //Sensibility
 const messages: Discord.Message[] = []; 
-const interval = 5_000;
+const interval = 5_000; // Batch interval
+const discord_token = ''; //Your bot token, https://discord.com/developers/applications
 
-// ECMAScript 2022 (ES13)/ESNext, view tsconfig.json
-const model = await tfModel.load(indice, ['toxicity'])
-    .then(() => {}, console.error);
+const client = new Discord.Client({ intents: 12 });
+const classifier = await Model.load(indice, ['toxicity']);
 
 client.once('ready', () => {
     console.log('Logged in');
-    
+
     setInterval(async () => {
         if(messages.length > 0) {
             const msgs = messages
                 .splice(0, messages.length)
-                .map(msg => msg.content);
+                .map(({ content }) => (content));
 
-            const results = await model.classify(msgs);
-            results.forEach(({ results }, index) => {
+            const results = await classifier.classify(msgs);
+            results.forEach(({ results }) => {
                 if (results.length <= 0) {
                     return;
                 }
 
-                const matched = results.some(({ match }) => match)
-                const message = messages.at(index);
+                results.forEach(({ match }, index) => {
+                    const message = messages.at(index);
 
-                if (matched && message) {
-                    //Your actions
-                     message.delete();
-                }
-            })
+                    if (match && message) {
+                        message?.delete();
+                    }
+                });
+            });
         }
     }, interval);
 });
 
-client.on('messageCreate', message => {
+client.on('messageCreate', (message) => {
     const { author, member, guild } = message;
     const bypass = author.bot || member?.permissions.has('Administrator') || guild?.ownerId == author.id;
 
-    if(!bypass) {
-        messages.push(message);
+    if(bypass) {
+        return;
     }
 
-    return;
+    messages.push(message);
 });
 
 client.login(discord_token);
